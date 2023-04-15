@@ -14,10 +14,29 @@ function App() {
   const session = useSession(); //tokens
   const supabase = useSupabaseClient(); //talk to supabase
   const {isLoading} =useSessionContext();
+  const events =[]
+  // if you can find a way to get the objects to look like the example below, our project works (nearly any permutation of dates works btw)
+  // const events = [
+  //   {
+  //     start: '2023-04-20T09:00:00',
+  //     end: '2023-04-20T11:00:00',
+  //     event: 'RandomWord1'
+  //   },
+  //   {
+  //     start: '15 April 2023 14:48',
+  //     end: '15 April 2023 16:48',
+  //     event: 'RandomWord2'
+  //   },
+  //   {
+  //     start: '3/7/23',
+  //     end: '2023-04-24T18:00:00',
+  //     event: 'RandomWord3'
+  //   }
+  // ];
+  if (events.length == 0){
+     events.push({start: start, end: end, event: eventName})
+  }
   
-
-  const newstart= new Date("15 April 2023 14:48")
-  const newend= new Date("15 April 2023 16:48")
   
   //remove weird flickering when reload
   if(isLoading){
@@ -41,17 +60,21 @@ function App() {
     await supabase.auth.signOut();
   }
   
-
+  
   // calender event making
   async function createCalenderEvent(){
+    for (let i = 0; i < events.length; i++) {
+    const start = events[i].start;
+    const end = events[i].end;
+    const eventName = events[i].event;
     const event ={
       "summary": eventName,
       "start":{
-        "dateTime": start.toISOString(),
+        "dateTime": new Date(start).toISOString(),
         "timeZone": Intl.DateTimeFormat().resolvedOptions().timeZone
       },
       "end": {
-        "dateTime": end.toISOString(),
+        "dateTime": new Date(end).toISOString(),
         "timeZone": Intl.DateTimeFormat().resolvedOptions().timeZone
       }
     }
@@ -68,8 +91,9 @@ function App() {
       console.log(data);
       alert("Event Created!")
     })
-  }
-
+  } }
+  console.log(start);
+  console.log(eventName);
 
   return (
     <div>
@@ -83,9 +107,9 @@ function App() {
         <div className='add_event'>
         <h3>Add An Event Yourself</h3>
         <p>Start Date/Time</p>
-        <DateTimePicker onChange={setStart} value={start} calenderIcon={null}/>
+        <input type="text" onChange={(e)=>setStart(e.target.value)}/>
         <p>End Date/Time</p>
-        <DateTimePicker onChange={setEnd} value={end}  />
+        <input type="text" onChange={(e)=>setEnd(e.target.value)}/>
         <p>Event Name</p>
         <input type="text" onChange={(e)=>setEventName(e.target.value)}/>
         <button onClick={()=> createCalenderEvent()}>Create Event</button>
@@ -93,7 +117,7 @@ function App() {
 
 
         <div className="upload_files">
-        <button className="file_button" onClick={()=> createCalenderEvent()}>Create Event</button>
+        <button className="file_button" onClick={()=> createCalenderEvent()}> Second Create Event</button>
         </div>
 
 
